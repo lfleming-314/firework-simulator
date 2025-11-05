@@ -3,7 +3,7 @@
 const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
 var canvas = document.getElementById("canvas");
-canvas.height = vh * 0.45;
+canvas.height = vh * 0.55;
 canvas.width = vw * 0.95;
 if (window.location.href.includes("/canvas")) {
     canvas.height = vh * 0.95;
@@ -62,7 +62,7 @@ var properties = {
 	explodeSpeed: 5,
 	ringParticles: 6,
 	bouquetParticles: 3,
-	spiralParticles: 5,
+	spiralParticles: 10,
 	crossetteBursts: 4,
 	spiralLoops: 2,
 	emitterRings: 2
