@@ -1,0 +1,502 @@
+<!-- Lauren Fleming -->
+<!-- Project A4 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fireworks!</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="firework simulator" content="an interactive animation" />
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="public/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Walter+Turncoat"
+      rel="stylesheet"
+    />
+    <!-- import the webpage's client-side javascript file -->
+    <script src="public/script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>Firework Simulator</h1>
+      <button
+        id="helpButton"
+        onclick="document.getElementById('helpSection').classList.toggle('hidden')"
+      >
+        Help
+      </button>
+    </header>
+    <div id="helpSection" class='hidden'>
+      <h3>Click the black canvas to launch a firework!</h3>
+      <p>
+        The controls below the canvas allow you to customize your fireworks.
+      </p>
+
+      <p>
+        <b>Launch Options</b> controls the initial speed and size.
+        <button
+          id="launchExpand"
+          onclick="expand('launchExpand', 'launchHelp')"
+        >
+          Expand
+        </button>
+      </p>
+      <div id="launchHelp" class="hidden boxDiv">
+        <p>
+          <b>Speed</b> sets the initial launch speed. <br />
+          Positive speeds go up, negative speeds go down.
+        </p>
+        <p>
+          <b>Angle</b> sets the initial launch angle, relative to the positive
+          y-axis.
+        </p>
+        <p><b>Fuse</b> sets the length of time before the firework explodes.</p>
+        <p><b>Radius</b> sets the radius of exploded particles (in pixels)</p>
+        <p>
+          <b>Length</b> sets the length of teardrop-shaped particles (in
+          pixels).
+        </p>
+        <button
+          id="launchCollapse"
+          onclick="collapse('launchExpand', 'launchHelp')"
+        >
+          Collapse
+        </button>
+      </div>
+
+      <p><b>Colors</b> allows you to select the color(s) of the fireworks.</p>
+
+      <p><b>Shapes</b> lets you choose the type(s) of explosions.</p>
+
+      <p>
+        <b>Environment</b> defines the external forces that act on particles.
+        <button
+          id="environmentExpand"
+          onclick="expand('environmentExpand', 'environmentHelp')"
+        >
+          Expand
+        </button>
+      </p>
+      <div id="environmentHelp" class="hidden boxDiv">
+        <p>
+          <b>Wind Speed</b> sets the speed of wind that pushes particles in the
+          x-direction. <br />Positive winds blow right, negative winds blow
+          left.
+        </p>
+        <p>
+          <b>Gravity</b> sets the acceleration due to gravity in the
+          y-direction. <br />Positive gravitaty goes downward, negative gravity
+          goes upward.
+        </p>
+        <p>
+          <b>Air Resistance</b> determines whether air resistance should affect
+          the motion of particles.
+        </p>
+        <p>
+          <b>Flip X/Y</b>, if checked, will make the x-direction vertical and
+          the y-direction horizontal.
+        </p>
+        <button
+          id="environmentCollapse"
+          onclick="collapse('environmentExpand', 'environmentHelp')"
+        >
+          Collapse
+        </button>
+      </div>
+
+      <p>
+        <b>Advanced Options</b> modifies more specific properties of the
+        fireworks.
+        <button
+          id="advancedExpand"
+          onclick="expand('advancedExpand', 'advancedHelp')"
+        >
+          Expand
+        </button>
+      </p>
+      <div id="advancedHelp" class="hidden boxDiv">
+        <p>
+          <b>Duration</b> sets the length of time for which exploded particles
+          remain visible.
+        </p>
+        <p>
+          <b>Explosion Speed</b> sets the base speed of particles after an
+          explosion.
+        </p>
+        <p>
+          <b>Bouquet Particles</b> sets the number of particles in a Bouquet
+          explosion.
+        </p>
+        <p>
+          <b>Ring Particles</b> sets the number of particles in a Ring or
+          Crossette explosion. <br />This also defines the number of particles
+          per ring in Peonies and Dahlias.
+        </p>
+        <p>
+          <b>Crossette Bursts</b> sets the number of particles that each
+          Crossette particle splits into.
+        </p>
+        <p>
+          <b>Spiral Particles</b> sets the number of particles in a Spiral
+          explosion.
+        </p>
+        <p>
+          <b>Spiral Loops</b> sets how far a Spiral explosion will rotate (in
+          360-degree rotations). <br />Positive loops go clockwise, negative
+          loops go couterclockwise.
+        </p>
+        <p>
+          <b>Peony/Dahlia Rings</b> sets how many rings are in each Peony or
+          Dahlia explosion.
+        </p>
+        <button
+          id="advancedCollapse"
+          onclick="collapse('advancedExpand', 'advancedHelp')"
+        >
+          Collapse
+        </button>
+      </div>
+
+      <p>
+        You can always re-open these instructions via the "Help" button in the
+        upper right corner.
+      </p>
+      <button
+        onclick="document.getElementById('helpSection').classList.toggle('hidden')"
+      >
+        Close
+      </button>
+    </div>
+    <main>
+      <canvas id="canvas"></canvas>
+      <form id="fireworkOptions">
+        <fieldset id="launchOptions">
+          <legend>Launch Options:</legend>
+          <div>
+            <label for="launchSpeed"> Speed: </label>
+            <input
+              type="number"
+              name="launchSpeed"
+              id="launchSpeed"
+              oninput="updateNumber(this.value, 'launchSpeed')"
+            />
+          </div>
+          <div>
+            <label for="launchAngle">Angle: </label>
+            <input
+              type="number"
+              name="launchAngle"
+              id="launchAngle"
+              oninput="updateNumber(this.value, 'launchAngle')"
+            />
+          </div>
+          <div>
+            <label for="fuse">Fuse: </label>
+            <input
+              type="number"
+              name="fuse"
+              id="fuse"
+              oninput="updatePosNumber(this.value, 'fuse')"
+            />
+          </div>
+          <div>
+            <label for="radius">Radius: </label>
+            <input
+              type="number"
+              name="radius"
+              id="radius"
+              oninput="updatePosNumber(this.value, 'radius')"
+            />
+          </div>
+          <div>
+            <label for="length">Length: </label>
+            <input
+              type="number"
+              name="radius"
+              id="length"
+              oninput="updatePosNumber(this.value, 'length')"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset id="colorOptions">
+          <legend>Colors:</legend>
+          <div>
+            <label for="reds">Red</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="red"
+              id="reds"
+              onclick="toggle('reds')"
+            />
+          </div>
+          <div>
+            <label for="oranges">Orange</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="orange"
+              id="oranges"
+              onclick="toggle('oranges')"
+            />
+          </div>
+          <div>
+            <label for="yellows">Yellow</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="yellow"
+              id="yellows"
+              onclick="toggle('yellows')"
+            />
+          </div>
+          <div>
+            <label for="greens">Green</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="green"
+              id="greens"
+              onclick="toggle('greens')"
+            />
+          </div>
+          <div>
+            <label for="blues">Blue</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="blue"
+              id="blues"
+              onclick="toggle('blues')"
+            />
+          </div>
+          <div>
+            <label for="purples">Purple</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="purple"
+              id="purples"
+              onclick="toggle('purples')"
+            />
+          </div>
+          <div>
+            <label for="pinks">Pink</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="pink"
+              id="pinks"
+              onclick="toggle('pinks')"
+            />
+          </div>
+          <div>
+            <label for="browns">Brown</label>
+            <input
+              type="checkbox"
+              name="color-selection"
+              value="brown"
+              id="browns"
+              onclick="toggle('browns')"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset id="shapeOptions">
+          <legend>Shapes:</legend>
+          <div>
+            <label for="stardust">Stardust</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="stardust"
+              onclick="toggle('stardust')"
+            />
+          </div>
+          <div>
+            <label for="comet">Comet</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="comet"
+              onclick="toggle('comet')"
+            />
+          </div>
+          <div>
+            <label for="bouquet">Bouquet</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="bouquet"
+              onclick="toggle('bouquet')"
+            />
+          </div>
+          <div>
+            <label for="ring">Ring</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="ring"
+              onclick="toggle('ring')"
+            />
+          </div>
+          <div>
+            <label for="crossette">Crossette</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="crossette"
+              onclick="toggle('crossette')"
+            />
+          </div>
+          <div>
+            <label for="spiral">Spiral</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="spiral"
+              onclick="toggle('spiral')"
+            />
+          </div>
+          <div>
+            <label for="peony">Peony</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="peony"
+              onclick="toggle('peony')"
+            />
+          </div>
+          <div>
+            <label for="dahlia">Dahlia</label>
+            <input
+              type="checkbox"
+              name="shape-selection"
+              id="dahlia"
+              onclick="toggle('dahlia')"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset id="environmentOptions">
+          <legend>Environment:</legend>
+          <div>
+            <label for="windspeed">Wind Speed: </label>
+            <input
+              type="number"
+              name="windspeed"
+              id="windspeed"
+              oninput="updateNumber(this.value, 'windspeed')"
+            />
+          </div>
+          <div>
+            <label for="gravity">Gravity: </label>
+            <input
+              type="number"
+              name="gravity"
+              id="gravity"
+              oninput="updateNumber(this.value, 'gravity')"
+            />
+          </div>
+          <br />
+          <div>
+            <label for="airResistance">Air Resistance</label>
+            <input
+              type="checkbox"
+              name="airResistance"
+              id="airResistance"
+              onclick="toggle('airResistance')"
+            />
+          </div>
+          <div>
+            <label for="xyFlip">Flip X/Y</label>
+            <input
+              type="checkbox"
+              name="xyFlip"
+              id="xyFlip"
+              onclick="toggle('xyFlip')"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset id="advancedOptions">
+          <legend>Advanced Options:</legend>
+          <div>
+            <label for="duration">Duration: </label>
+            <input
+              type="number"
+              name="duration"
+              id="duration"
+              oninput="updatePosInt(this.value, 'duration')"
+            />
+          </div>
+          <div>
+            <label for="explodeSpeed">Explosion Speed: </label>
+            <input
+              type="number"
+              name="explodeSpeed"
+              id="explodeSpeed"
+              oninput="updateNumber(this.value, 'explodeSpeed')"
+            />
+          </div>
+          <div>
+            <label for="bouquetParticles">Bouquet Particles: </label>
+            <input
+              type="number"
+              name="bouquetParticles"
+              id="bouquetParticles"
+              oninput="updatePosInt(this.value, 'bouquetParticles')"
+            />
+          </div>
+          <div>
+            <label for="ringParticles">Ring Particles: </label>
+            <input
+              type="number"
+              name="ringParticles"
+              id="ringParticles"
+              oninput="updatePosInt(this.value, 'ringParticles')"
+            />
+          </div>
+          <div>
+            <label for="crossetteBursts">Crossette Bursts: </label>
+            <input
+              type="number"
+              name="crossetteBursts"
+              id="crossetteBursts"
+              oninput="updatePosInt(this.value, 'crossetteBursts')"
+            />
+          </div>
+          <div>
+            <label for="spiralParticles">Spiral Particles: </label>
+            <input
+              type="number"
+              name="gravity"
+              id="spiralParticles"
+              oninput="updatePosInt(this.value, 'spiralParticles')"
+            />
+          </div>
+          <div>
+            <label for="spiralLoops">Spiral Loops: </label>
+            <input
+              type="number"
+              name="spiralLoops"
+              id="spiralLoops"
+              oninput="updateNumber(this.value, 'spiralLoops')"
+            />
+          </div>
+          <div>
+            <label for="emitterRings">Peony/Dahlia Rings: </label>
+            <input
+              type="number"
+              name="emitterRings"
+              id="emitterRings"
+              oninput="updatePosInt(this.value, 'emitterRings')"
+            />
+          </div>
+        </fieldset>
+      </form>
+    </main>
+  </body>
+</html>
