@@ -241,7 +241,7 @@ class Bouquet extends Firework {
         var startAngle = vAngle + circ/ (2 * this.numParticles);
         for (var p = 0; p < this.numParticles; p++) {
             var pAngle = startAngle + p * increment;
-            var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle);
+            var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle, this.vx, this.vy);
             worldlist.push(new Comet(this.x + pV[0], this.y + pV[1], this.color, pV[0], pV[1], this.duration, this.radius, this.length))
         }
     }
@@ -253,7 +253,7 @@ class Ring extends Firework {
         var increment = circ / this.numParticles; //angle between exploded particles
         for (var p = 0; p < this.numParticles; p++) {
             var pAngle = p * increment;
-            var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle);
+            var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle, this.vx, this.vy);
             worldlist.push(new Comet(this.x, this.y, this.color, pV[0], pV[1], this.duration, this.radius, this.length/2))
         }
     }
@@ -270,7 +270,7 @@ class Crossette extends Firework {
         var increment = 360 / this.numParticles;
         for (var p = 0; p < this.numParticles; p++) {
             var pAngle = vAngle + p * increment;
-            var pV = calcLaunchSpeeds(this.explodeSpeed, degToRad(pAngle));
+            var pV = calcLaunchSpeeds(this.explodeSpeed, degToRad(pAngle), this.vx, this.vy);
             worldlist.push(new Ring(this.x, this.y, this.color, pV[0], pV[1], this.duration/2, this.radius, this.length, this.explodeSpeed, this.duration/2, this.color, this.bursts));
         }
     }
@@ -315,7 +315,7 @@ class Spiral extends Emitter {
         if(this.counter < this.numParticles) {
             var vAngle = angle(this.vx, this.vy);
             var pAngle = (circ * this.special * this.counter / this.numParticles) + vAngle;
-            var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle);
+            var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle, this.vx, this.vy);
             worldlist.push(new Comet(this.x + this.vx, this.y + this.vy, this.color, pV[0], pV[1], this.duration, this.radius, this.length/2));
             this.counter += 1;
         } else {
@@ -333,7 +333,7 @@ class Dahlia extends Emitter {
             var offset = this.counter * circ / (2 * this.numParticles);
             for (var p = 0; p < this.numParticles; p++) {
                 var pAngle = p * increment + offset;
-                var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle);
+                var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle, this.vx, this.vy);
                 worldlist.push(new Stardust(this.x, this.y, this.color, pV[0], pV[1], this.duration, this.radius/2, this.radius))
             }
         }
@@ -350,7 +350,7 @@ class Peony extends Emitter {
             var offset = 0.5 * this.counter/2;
             for (var p = 0; p < this.numParticles; p++) {
                 var pAngle = (p + offset) * increment;
-                var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle);
+                var pV = calcLaunchSpeeds(this.explodeSpeed, pAngle, this.vx, this.vy);
                 worldlist.push(new Particle(this.x, this.y, this.color, pV[0], pV[1], this.duration, this.radius, this.radius/2))
             }
         }
@@ -426,9 +426,9 @@ const translucent = function(baseColor, timer) {
 
 //angular functions
 //calculate x and y launch speeds based on angle (uses radians)
-const calcLaunchSpeeds = function(launchSpeed, launchAngle) {
-    var v0y = launchSpeed * Math.cos(launchAngle);
-    var v0x = launchSpeed * Math.sin(launchAngle);
+const calcLaunchSpeeds = function(launchSpeed, launchAngle, vx, vy) {
+    var v0y = launchSpeed * Math.cos(launchAngle) - vy;
+    var v0x = launchSpeed * Math.sin(launchAngle) - vx;
     if (properties.xyFlip) {
         return [v0y, -1 * v0x];
     } else {
@@ -560,7 +560,7 @@ const launcher = canvas.addEventListener("click", function(e) {
     //pick color from active lists
     var color = chooseColor();
     //calculate initial x and y speeds from launchSpeed and launchAngle
-    var v0xy = calcLaunchSpeeds(properties.launchSpeed, degToRad(properties.launchAngle));
+    var v0xy = calcLaunchSpeeds(properties.launchSpeed, degToRad(properties.launchAngle), 0, 0);
     //create new object and add to worldlist
     worldlist.push(createShape(xPos, yPos, color, v0xy[0], v0xy[1]));
 })
